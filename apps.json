@@ -1,0 +1,19 @@
+{
+  "apps":[
+    {
+      "name":"Spotify",
+      "package":"com.spotify.music",
+      "url":"https://example.com/spotify.apk"
+    },
+    {
+      "name":"CapCut",
+      "package":"com.lemon.lvoverseas",
+      "url":"https://example.com/capcut.apk"
+    },
+    {
+      "name":"TikTok",
+      "package":"com.zhiliaoapp.musically",
+      "url":"https://example.com/tiktok.apk"
+    }
+  ]
+}
