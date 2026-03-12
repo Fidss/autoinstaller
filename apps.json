@@ -4,6 +4,11 @@
       "name":"Rotation Control",
       "package":"org.crape.rotationcontrol",
       "url":"https://raw.githubusercontent.com/Fidss/AutoInstaller/main/org.crape.rotationcontrol_1.1.apk"
+    },
+    {
+      "name":"Roblox",
+      "package":"com.roblox.client",
+      "url":"https://files.catbox.moe/waiklw.apk"
     }
   ]
 }
