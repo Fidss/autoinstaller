@@ -14,7 +14,7 @@ print("====================================")
 print("      Online APK Auto Installer")
 print("====================================\n")
 
-local json_url="https://example.com/apps.json"
+local json_url="https://raw.githubusercontent.com/Fidss/AutoInstaller/main/apps.json"
 
 print("Mengambil database aplikasi...\n")
 
