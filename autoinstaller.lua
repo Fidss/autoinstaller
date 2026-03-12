@@ -17,7 +17,7 @@ print(cyan..[[
 ╚═╝  ╚═╝ ╚═════╝    ╚═╝    ╚═════╝ 
 ]]..reset)
 
-print(green.."        AUTO INSTALLER v4.1"..reset)
+print(green.."        AUTO INSTALLER v4.2"..reset)
 print(yellow.."===================================="..reset)
 print("      Online APK Auto Installer")
 print(yellow.."====================================\n"..reset)
@@ -58,11 +58,10 @@ print("\nMenu:")
 print("1. Install aplikasi tertentu")
 print("2. Install semua aplikasi")
 print("3. Uninstall aplikasi user tertentu")
-print("4. Uninstall semua aplikasi user (kecuali com.termux)")
+print("4. Uninstall semua aplikasi user (skip com.termux & yang tidak terinstall)")
 
 io.write("\nPilih menu: ")
 local menu=io.read()
-
 local selected={}
 
 -- ================= INSTALL =================
@@ -79,13 +78,12 @@ elseif menu=="2" then
         table.insert(selected,i)
     end
 
--- ================= UNINSTALL USER =================
+-- ================= UNINSTALL =================
 elseif menu=="3" or menu=="4" then
     print(cyan.."\nMendeteksi aplikasi user...\n"..reset)
 
-    -- paksa su
+    -- daftar semua aplikasi user
     os.execute("su -c 'pm list packages -3' > packages.txt")
-
     local handle=io.open("packages.txt","r")
     local packages={}
     for line in handle:lines() do
@@ -123,13 +121,18 @@ elseif menu=="3" or menu=="4" then
     print("\n"..yellow.."Memulai uninstall...\n"..reset)
     for _,pkg in ipairs(selected) do
         if pkg then
-            print(yellow.."================================"..reset)
-            print(green.."Uninstall : "..pkg..reset)
-            print(yellow.."================================"..reset)
-            -- force stop dulu
-            os.execute("su -c 'am force-stop "..pkg.."'")
-            os.execute("su -c 'pm uninstall --user 0 "..pkg.."'")
-            print(green.."Selesai uninstall "..pkg.."\n"..reset)
+            -- cek apakah terinstall untuk user 0
+            local check = io.popen("su -c 'pm list packages --user 0'"):read("*a")
+            if check:find(pkg) then
+                print(yellow.."================================"..reset)
+                print(green.."Uninstall : "..pkg..reset)
+                print(yellow.."================================"..reset)
+                os.execute("su -c 'am force-stop "..pkg.."'")
+                os.execute("su -c 'pm uninstall --user 0 "..pkg.."'")
+                print(green.."Selesai uninstall "..pkg.."\n"..reset)
+            else
+                print(yellow.."Skip "..pkg.." (tidak terinstall untuk user 0)"..reset)
+            end
         end
     end
 
@@ -142,7 +145,6 @@ end
 -- ================= INSTALL PROCESS =================
 if menu=="1" or menu=="2" then
     print("\n"..yellow.."Memulai instalasi...\n"..reset)
-
     local home="/data/data/com.termux/files/home/"
 
     for _,i in ipairs(selected) do
