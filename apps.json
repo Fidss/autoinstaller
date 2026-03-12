@@ -1,8 +1,8 @@
 {
   "apps":[
     {
-      "name":"Delta",
-      "package":"com.roblox.client",
+      "name":"Rotation Control",
+      "package":"org.crape.rotationcontrol",
       "url":""
     }
   ]
