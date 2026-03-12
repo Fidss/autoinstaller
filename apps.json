@@ -1,3 +1,9 @@
 {
-  "apps":[]
+  "apps":[
+    {
+      "name":"Delta",
+      "package":"com.roblox.client",
+      "url":""
+    }
+  ]
 }
