@@ -17,7 +17,7 @@ print(cyan..[[
 ╚═╝  ╚═╝ ╚═════╝    ╚═╝    ╚═════╝ 
 ]]..reset)
 
-print(green.."        AUTO INSTALLER v4"..reset)
+print(green.."        AUTO INSTALLER v4.1"..reset)
 print(yellow.."===================================="..reset)
 print("      Online APK Auto Installer")
 print(yellow.."====================================\n"..reset)
@@ -57,7 +57,8 @@ end
 print("\nMenu:")
 print("1. Install aplikasi tertentu")
 print("2. Install semua aplikasi")
-print("3. Uninstall aplikasi user")
+print("3. Uninstall aplikasi user tertentu")
+print("4. Uninstall semua aplikasi user (kecuali com.termux)")
 
 io.write("\nPilih menu: ")
 local menu=io.read()
@@ -78,8 +79,8 @@ elseif menu=="2" then
         table.insert(selected,i)
     end
 
--- ================= UNINSTALL =================
-elseif menu=="3" then
+-- ================= UNINSTALL USER =================
+elseif menu=="3" or menu=="4" then
     print(cyan.."\nMendeteksi aplikasi user...\n"..reset)
 
     -- paksa su
@@ -89,7 +90,9 @@ elseif menu=="3" then
     local packages={}
     for line in handle:lines() do
         local pkg=line:gsub("package:","")
-        table.insert(packages,pkg)
+        if pkg~="com.termux" then -- skip termux
+            table.insert(packages,pkg)
+        end
     end
     handle:close()
 
@@ -103,21 +106,29 @@ elseif menu=="3" then
         print(cyan..i..". "..reset..pkg)
     end
 
-    print("\nMasukkan nomor aplikasi yang ingin di uninstall (contoh: 1,3,5)")
-    io.write("Pilihan: ")
-    local input=io.read()
-    for num in string.gmatch(input,"%d+") do
-        table.insert(selected,tonumber(num))
+    if menu=="3" then
+        print("\nMasukkan nomor aplikasi yang ingin di uninstall (contoh: 1,3,5)")
+        io.write("Pilihan: ")
+        local input=io.read()
+        for num in string.gmatch(input,"%d+") do
+            table.insert(selected,packages[tonumber(num)])
+        end
+    elseif menu=="4" then
+        -- uninstall semua aplikasi user
+        for _,pkg in ipairs(packages) do
+            table.insert(selected,pkg)
+        end
     end
 
     print("\n"..yellow.."Memulai uninstall...\n"..reset)
-    for _,i in ipairs(selected) do
-        local pkg=packages[i]
+    for _,pkg in ipairs(selected) do
         if pkg then
             print(yellow.."================================"..reset)
             print(green.."Uninstall : "..pkg..reset)
             print(yellow.."================================"..reset)
-            os.execute("su -c 'pm uninstall "..pkg.."'")
+            -- force stop dulu
+            os.execute("su -c 'am force-stop "..pkg.."'")
+            os.execute("su -c 'pm uninstall --user 0 "..pkg.."'")
             print(green.."Selesai uninstall "..pkg.."\n"..reset)
         end
     end
