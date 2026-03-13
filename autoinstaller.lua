@@ -17,7 +17,7 @@ print(cyan..[[
 ╚═╝  ╚═╝ ╚═════╝    ╚═╝    ╚═════╝ 
 ]]..reset)
 
-print(green.."        AUTO INSTALLER v4.2"..reset)
+print(green.."        AUTO INSTALLER v5"..reset)
 print(yellow.."===================================="..reset)
 print("      Online APK Auto Installer")
 print(yellow.."====================================\n"..reset)
@@ -58,7 +58,7 @@ print("\nMenu:")
 print("1. Install aplikasi tertentu")
 print("2. Install semua aplikasi")
 print("3. Uninstall aplikasi user tertentu")
-print("4. Uninstall semua aplikasi user (skip com.termux & yang tidak terinstall)")
+print("4. Uninstall semua aplikasi user (skip Termux & yang tidak terinstall)")
 
 io.write("\nPilih menu: ")
 local menu=io.read()
@@ -121,18 +121,20 @@ elseif menu=="3" or menu=="4" then
     print("\n"..yellow.."Memulai uninstall...\n"..reset)
     for _,pkg in ipairs(selected) do
         if pkg then
-            -- cek apakah terinstall untuk user 0
-            local check = io.popen("su -c 'pm list packages --user 0'"):read("*a")
-            if check:find(pkg) then
-                print(yellow.."================================"..reset)
-                print(green.."Uninstall : "..pkg..reset)
-                print(yellow.."================================"..reset)
-                os.execute("su -c 'am force-stop "..pkg.."'")
+            print(yellow.."================================"..reset)
+            print(green.."Uninstall : "..pkg..reset)
+            print(yellow.."================================"..reset)
+
+            os.execute("su -c 'am force-stop "..pkg.."'")
+
+            -- uninstall normal dulu
+            local result = os.execute("su -c 'pm uninstall "..pkg.."'")
+            if result ~= 0 then
+                -- fallback uninstall user 0
                 os.execute("su -c 'pm uninstall --user 0 "..pkg.."'")
-                print(green.."Selesai uninstall "..pkg.."\n"..reset)
-            else
-                print(yellow.."Skip "..pkg.." (tidak terinstall untuk user 0)"..reset)
             end
+
+            print(green.."Selesai uninstall "..pkg.."\n"..reset)
         end
     end
 
@@ -162,13 +164,20 @@ if menu=="1" or menu=="2" then
             print(cyan.."File "..apk.." sudah ada, skip download"..reset)
         else
             print(cyan.."Downloading..."..reset)
+            -- progress bar sederhana
             os.execute("curl -L --progress-bar '"..app.url.."' -o '"..apk.."'")
             print(green.."Download selesai"..reset)
         end
 
-        print(cyan.."Installing..."..reset)
-        os.execute("su -c 'pm install -r "..home..apk.."'")
-        print(green.."Selesai install "..app.name.."\n"..reset)
+        -- cek apakah sudah terinstall
+        local check = io.popen("pm list packages | grep "..app.package or ""):read("*a")
+        if check:find(app.package) then
+            print(yellow.."Aplikasi "..app.name.." sudah terinstall, skip install"..reset)
+        else
+            print(cyan.."Installing..."..reset)
+            os.execute("su -c 'pm install -r "..home..apk.."'")
+            print(green.."Selesai install "..app.name.."\n"..reset)
+        end
     end
 
     print(yellow.."===================================="..reset)
