@@ -220,26 +220,72 @@ print("0 Keluar")
 
 io.write("\nPilih menu: ")
 local menu=io.read()
-
--- AUTO SETUP
+           
+-- AUTO SETUP SYSTEM
 if menu=="1" then
 
 progress("Reset DPI")
 os.execute("su -c '/system/bin/wm density reset'")
 
+os.execute("sleep 1")
+
+progress("Apply DPI 220")
+os.execute("su -c '/system/bin/wm density 220'")
+
+os.execute("sleep 1")
+
 progress("Enable Developer Mode")
 os.execute("su -c 'settings put global development_settings_enabled 1'")
+
+progress("Disable Animations")
+os.execute("su -c 'settings put global window_animation_scale 0'")
+os.execute("su -c 'settings put global transition_animation_scale 0'")
+os.execute("su -c 'settings put global animator_duration_scale 0'")
 
 progress("Enable Freeform Mode")
 os.execute("su -c 'settings put global enable_freeform_support 1'")
 os.execute("su -c 'settings put global force_resizable_activities 1'")
 
-android_tweaks()
+progress("Pointer Speed Boost")
+os.execute("su -c 'settings put system pointer_speed 7'")
+
+progress("Disable Wifi Scan")
+os.execute("su -c 'settings put global wifi_scan_always_enabled 0'")
+
+progress("Enable GPU Rendering")
+os.execute("su -c 'setprop debug.hwui.renderer opengl'")
+os.execute("su -c 'setprop debug.egl.hw 1'")
+
+progress("Performance Tuning")
+os.execute("su -c 'setprop debug.performance.tuning 1'")
+os.execute("su -c 'setprop video.accelerate.hw 1'")
+os.execute("su -c 'setprop debug.sf.hw 1'")
+os.execute("su -c 'setprop debug.composition.type gpu'")
+
+progress("FPS Boost")
+os.execute("su -c 'setprop debug.hwui.fps_divisor 1'")
+
+progress("Touch Boost")
+os.execute("su -c 'setprop debug.touch_boost 1'")
+
+progress("Network Boost")
+os.execute("su -c 'setprop net.tcp.buffersize.default 4096,87380,110208,4096,16384,110208'")
+os.execute("su -c 'setprop net.tcp.buffersize.wifi 4096,87380,110208,4096,16384,110208'")
+
+progress("RAM Optimization")
+os.execute("su -c 'echo 3 > /proc/sys/vm/drop_caches'")
+
+progress("Clean System Cache")
+os.execute("su -c 'rm -rf /data/cache/*'")
+
+progress("Kill Background Apps")
+os.execute("su -c 'am kill-all'")
 
 progress("Restart SystemUI")
 os.execute("su -c 'pkill com.android.systemui'")
 
-print(green.."Auto setup selesai!"..reset)
+print(green.."✓ AUTO SETUP SYSTEM SELESAI!"..reset)
+
 os.execute("sleep 2")
 
 -- OPTIMIZE
