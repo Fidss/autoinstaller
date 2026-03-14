@@ -64,14 +64,19 @@ local dpi=out:match("Physical density:%s*(%d+)")
 return dpi or "Unknown"
 end
 
--- ULTRA DEBLOAT MODE (EXTREME)
+-- ULTRA DEBLOAT MODE (EXTREME+)
 function ultra_debloat()
 
 progress("Clearing RAM")
-os.execute("su -c 'echo 3 > /proc/sys/vm/drop_caches'")
+os.execute("su -c 'sync; echo 3 > /proc/sys/vm/drop_caches'")
 
 progress("Killing Background Apps")
 os.execute("su -c 'am kill-all'")
+os.execute("su -c 'pkill -f com.android'")
+os.execute("su -c 'pkill -f google'")
+
+progress("Force Stop All Apps")
+os.execute("su -c 'cmd activity stop-app-switches'")
 
 progress("Disable Play Store")
 os.execute("su -c 'pm disable-user --user 0 com.android.vending'")
@@ -85,27 +90,57 @@ os.execute("su -c 'pm disable-user --user 0 com.google.android.feedback'")
 progress("Disable Google Partner Setup")
 os.execute("su -c 'pm disable-user --user 0 com.google.android.partnersetup'")
 
-progress("Disable Sync Services")
+progress("Disable Google Sync")
 os.execute("su -c 'settings put global master_sync_enabled 0'")
 
-progress("Limit Background Processes")
-os.execute("su -c 'settings put global background_process_limit 1'")
+progress("Disable Job Scheduler")
+os.execute("su -c 'cmd jobscheduler reset-execution-quota'")
+
+progress("Disable Background Services")
+os.execute("su -c 'settings put global background_process_limit 0'")
+
+progress("Disable App Standby")
+os.execute("su -c 'settings put global app_standby_enabled 0'")
+
+progress("Disable Doze Mode")
+os.execute("su -c 'dumpsys deviceidle disable'")
 
 progress("Disable Location")
 os.execute("su -c 'settings put secure location_mode 0'")
+
+progress("Disable Sensors")
+os.execute("su -c 'service call sensorservice 1'")
 
 progress("Disable Animations")
 os.execute("su -c 'settings put global window_animation_scale 0'")
 os.execute("su -c 'settings put global transition_animation_scale 0'")
 os.execute("su -c 'settings put global animator_duration_scale 0'")
 
+progress("Stop Logcat")
+os.execute("su -c 'logcat -c'")
+
+progress("Clean Dalvik Cache")
+os.execute("su -c 'rm -rf /data/dalvik-cache/*'")
+
 progress("Clean System Cache")
 os.execute("su -c 'rm -rf /data/cache/*'")
+
+progress("Clean Temp Files")
+os.execute("su -c 'rm -rf /data/local/tmp/*'")
+
+progress("Disable Thermal Service")
+os.execute("su -c 'stop thermal-engine'")
+
+progress("Disable Stats Service")
+os.execute("su -c 'stop statsd'")
 
 progress("Restart SystemUI")
 os.execute("su -c 'pkill com.android.systemui'")
 
-print(green.."✓ ULTRA DEBLOAT SELESAI"..reset)
+progress("Final RAM Cleanup")
+os.execute("su -c 'sync; echo 3 > /proc/sys/vm/drop_caches'")
+
+print(green.."✓ ULTRA DEBLOAT EXTREME SELESAI"..reset)
 
 end
 
