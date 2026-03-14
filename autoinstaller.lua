@@ -76,24 +76,6 @@ os.execute("su -c 'am kill-all'")
 progress("Disable Play Store")
 os.execute("su -c 'pm disable-user --user 0 com.android.vending'")
 
-progress("Disable Google Maps")
-os.execute("su -c 'pm disable-user --user 0 com.google.android.apps.maps'")
-
-progress("Disable Google Photos")
-os.execute("su -c 'pm disable-user --user 0 com.google.android.apps.photos'")
-
-progress("Disable Google Drive")
-os.execute("su -c 'pm disable-user --user 0 com.google.android.apps.docs'")
-
-progress("Disable YouTube")
-os.execute("su -c 'pm disable-user --user 0 com.google.android.youtube'")
-
-progress("Disable Gmail")
-os.execute("su -c 'pm disable-user --user 0 com.google.android.gm'")
-
-progress("Disable Google Assistant")
-os.execute("su -c 'pm disable-user --user 0 com.google.android.googlequicksearchbox'")
-
 progress("Disable Chrome")
 os.execute("su -c 'pm disable-user --user 0 com.android.chrome'")
 
@@ -102,18 +84,6 @@ os.execute("su -c 'pm disable-user --user 0 com.google.android.feedback'")
 
 progress("Disable Google Partner Setup")
 os.execute("su -c 'pm disable-user --user 0 com.google.android.partnersetup'")
-
-progress("Disable Google Print")
-os.execute("su -c 'pm disable-user --user 0 com.google.android.printservice.recommendation'")
-
-progress("Disable Wallpaper Services")
-os.execute("su -c 'pm disable-user --user 0 com.google.android.apps.wallpaper'")
-
-progress("Disable Live Wallpaper")
-os.execute("su -c 'pm disable-user --user 0 com.android.wallpaper.livepicker'")
-
-progress("Disable OTA Updater")
-os.execute("su -c 'pm disable-user --user 0 com.google.android.gms.update'")
 
 progress("Disable Sync Services")
 os.execute("su -c 'settings put global master_sync_enabled 0'")
