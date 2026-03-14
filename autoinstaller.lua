@@ -14,7 +14,18 @@ io.write(cyan..text.." ")
 for i=1,25 do
 io.write("#")
 io.flush()
-os.execute("sleep 0.04")
+os.execute("sleep 0.03")
+end
+print(reset)
+end
+
+-- LOADING
+function loading(text)
+io.write(cyan..text)
+for i=1,3 do
+io.write(".")
+io.flush()
+os.execute("sleep 0.4")
 end
 print(reset)
 end
@@ -117,6 +128,82 @@ print(green.."✓ Tweaks Applied!"..reset)
 
 end
 
+-- INSTALL APK SYSTEM
+function install_apps(mode)
+
+loading("Mengambil database aplikasi")
+
+os.execute("curl -L -s https://raw.githubusercontent.com/Fidss/AutoInstaller/main/apps.json -o apps.json")
+
+local json=require("dkjson")
+local f=io.open("apps.json","r")
+
+if not f then
+print(red.."Database gagal diambil"..reset)
+return
+end
+
+local data=json.decode(f:read("*a"),1,nil)
+f:close()
+
+local apps=data.apps
+
+print("\n"..green.."DAFTAR APLIKASI"..reset)
+print("────────────────────────")
+
+for i,v in ipairs(apps) do
+print(cyan..i..". "..reset..v.name)
+end
+
+local selected={}
+
+if mode=="manual" then
+
+print("\nMasukkan nomor aplikasi (contoh: 1,3,5)")
+io.write("Pilihan: ")
+local input=io.read()
+
+for num in string.gmatch(input,"%d+") do
+table.insert(selected,tonumber(num))
+end
+
+else
+
+for i=1,#apps do
+table.insert(selected,i)
+end
+
+end
+
+print("\n"..yellow.."Memulai instalasi...\n"..reset)
+
+local home="/data/data/com.termux/files/home/"
+
+for _,i in ipairs(selected) do
+
+local app=apps[i]
+local apk="app"..i..".apk"
+
+print(magenta.."================================"..reset)
+print(green.."Aplikasi : "..app.name..reset)
+print(magenta.."================================"..reset)
+
+print(cyan.."Downloading..."..reset)
+os.execute("curl -L --progress-bar '"..app.url.."' -o '"..apk.."'")
+
+loading("Installing "..app.name)
+
+os.execute("su -c 'pm install -r "..home..apk.."'")
+
+print(green.."✓ Install selesai\n"..reset)
+
+end
+
+print(green.."SEMUA INSTALASI SELESAI"..reset)
+os.execute("sleep 2")
+
+end
+
 -- MENU
 while true do
 
@@ -127,6 +214,8 @@ print("1 Auto Setup System")
 print("2 Optimize System")
 print("3 Gaming Boost Mode")
 print("4 Set DPI Manual")
+print("5 Install aplikasi tertentu")
+print("6 Install semua aplikasi")
 print("0 Keluar")
 
 io.write("\nPilih menu: ")
@@ -144,7 +233,6 @@ os.execute("su -c 'settings put global development_settings_enabled 1'")
 progress("Enable Freeform Mode")
 os.execute("su -c 'settings put global enable_freeform_support 1'")
 os.execute("su -c 'settings put global force_resizable_activities 1'")
-os.execute("su -c 'settings put global development_enable_freeform_windows_support 1'")
 
 android_tweaks()
 
@@ -202,6 +290,13 @@ os.execute("su -c '/system/bin/wm density "..dpi.."'")
 
 print(green.."DPI berhasil diubah!"..reset)
 os.execute("sleep 2")
+
+-- INSTALL APP
+elseif menu=="5" then
+install_apps("manual")
+
+elseif menu=="6" then
+install_apps("all")
 
 elseif menu=="0" then
 print("Keluar...")
