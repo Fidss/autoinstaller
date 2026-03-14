@@ -403,9 +403,6 @@ print("🌐 Coba buka browser - Internet harusnya jalan!")
 
 end
 
--- JALANKAN
-extreme_disable()
-
 -- ENABLE CHROME & PLAY STORE
 function enable_google()
 
@@ -582,9 +579,9 @@ print("3 Gaming Boost Mode")
 print("4 Set DPI Manual")
 print("5 Install aplikasi tertentu")
 print("6 Install semua aplikasi")
-print("7 Ultra Debloat Mode (Extreme)")
+print("7 Ultra Debloat Mode (Extreme) (Recommend)")
 print("8 Enable Chrome & Play Store")
-print("9 Extreme Disable (System disabled)")
+print("9 Extreme Disable (System disabled) (Not Recommend, Bisa Bikin Tidak Bisa Booting)")
 print("0 Keluar")
 
 io.write("\nPilih menu: ")
