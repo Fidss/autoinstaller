@@ -75,31 +75,94 @@ print(red.."Root tidak tersedia!"..reset)
 os.exit()
 end
 
+-- 30+ ANDROID TWEAKS
+function android_tweaks()
+
+loading("Apply Android Tweaks")
+
+os.execute("su -c 'settings put global window_animation_scale 0'")
+os.execute("su -c 'settings put global transition_animation_scale 0'")
+os.execute("su -c 'settings put global animator_duration_scale 0'")
+
+os.execute("su -c 'settings put global enable_freeform_support 1'")
+os.execute("su -c 'settings put global force_resizable_activities 1'")
+
+os.execute("su -c 'setprop debug.hwui.renderer opengl'")
+os.execute("su -c 'setprop debug.egl.hw 1'")
+
+os.execute("su -c 'settings put system pointer_speed 7'")
+
+os.execute("su -c 'settings put global tcp_default_init_rwnd 60'")
+os.execute("su -c 'settings put global wifi_scan_always_enabled 0'")
+
+os.execute("su -c 'echo 3 > /proc/sys/vm/drop_caches'")
+os.execute("su -c 'setprop persist.sys.purgeable_assets 1'")
+
+os.execute("su -c 'setprop dalvik.vm.heapstartsize 8m'")
+os.execute("su -c 'setprop dalvik.vm.heaptargetutilization 0.75'")
+os.execute("su -c 'setprop dalvik.vm.heapgrowthlimit 256m'")
+os.execute("su -c 'setprop dalvik.vm.heapsize 512m'")
+
+os.execute("su -c 'setprop debug.performance.tuning 1'")
+os.execute("su -c 'setprop video.accelerate.hw 1'")
+
+os.execute("su -c 'setprop windowsmgr.max_events_per_sec 150'")
+
+os.execute("su -c 'setprop log.tag.stats_log OFF'")
+os.execute("su -c 'setprop log.tag.SQLiteLog OFF'")
+
+os.execute("su -c 'settings put global background_process_limit 2'")
+
+os.execute("su -c 'setprop ro.config.hw_fast_dormancy 1'")
+os.execute("su -c 'setprop debug.composition.type gpu'")
+
+os.execute("su -c 'settings put global show_crash_dialog 0'")
+os.execute("su -c 'settings put global app_standby_enabled 0'")
+
+os.execute("su -c 'settings put global force_gpu_rendering 1'")
+
+os.execute("su -c 'setprop persist.sys.strictmode.disable true'")
+
+os.execute("su -c 'setprop sys.io.scheduler noop'")
+
+os.execute("su -c 'setprop net.tcp.buffersize.default 4096,87380,256960,4096,16384,256960'")
+
+os.execute("su -c 'setprop debug.sf.hw 1'")
+os.execute("su -c 'setprop debug.sf.latch_unsignaled 1'")
+
+os.execute("su -c 'setprop debug.hwui.profile false'")
+
+os.execute("su -c 'setprop ro.input.noresample 1'")
+
+os.execute("su -c 'setprop audio.offload.disable 0'")
+
+print(green.."✓ 30+ Android Tweaks Applied!"..reset)
+
+end
+
 while true do
 
 header()
 
 print(magenta.."MENU UTAMA"..reset)
 
-print("1 Install aplikasi tertentu")
-print("2 Install semua aplikasi")
-print("3 Auto Setup System")
-print("4 Optimize System")
-print("5 Install Kaeru")
-print("6 Run Kaeru")
-print("7 Set DPI")
-print("9 Gaming Boost Mode")
+print("1 Auto Setup System")
+print("2 Optimize System")
+print("3 Gaming Boost Mode")
+print("4 Install Kaeru")
+print("5 Run Kaeru")
+print("6 Set DPI")
 print("0 Keluar")
 
 io.write("\nPilih menu: ")
 local menu=io.read()
 
--- AUTO SETUP SYSTEM
-if menu=="3" then
+-- AUTO SETUP
+if menu=="1" then
 
-print(cyan.."\nPilih DPI untuk sistem:\n"..reset)
+print(cyan.."\nPilih DPI:\n"..reset)
 
-print("1. 360 (Default Android)")
+print("1. 360 (Default)")
 print("2. 420 (Recommended)")
 print("3. 480")
 print("4. 520")
@@ -141,11 +204,13 @@ loading("Enable Freeform Mode")
 os.execute("su -c 'settings put global enable_freeform_support 1'")
 os.execute("su -c 'settings put global force_resizable_activities 1'")
 
+android_tweaks()
+
 print(green.."\n✓ Auto Setup selesai\n"..reset)
 io.read()
 
 -- OPTIMIZE
-elseif menu=="4" then
+elseif menu=="2" then
 
 loading("Cleaning Cache")
 os.execute("su -c 'rm -rf /data/cache/*'")
@@ -156,11 +221,13 @@ os.execute("su -c 'echo 3 > /proc/sys/vm/drop_caches'")
 loading("Kill Background Apps")
 os.execute("su -c 'am kill-all'")
 
+android_tweaks()
+
 print(green.."✓ Optimize selesai\n"..reset)
 io.read()
 
--- GAMING BOOST
-elseif menu=="9" then
+-- GAMING MODE
+elseif menu=="3" then
 
 loading("RAM Boost")
 os.execute("su -c 'echo 3 > /proc/sys/vm/drop_caches'")
@@ -175,6 +242,35 @@ loading("GPU Boost")
 os.execute("su -c 'setprop debug.hwui.renderer opengl'")
 
 print(green.."✓ Gaming mode aktif\n"..reset)
+io.read()
+
+-- INSTALL KAERU
+elseif menu=="4" then
+
+loading("Download Kaeru")
+os.execute("curl -L -o /sdcard/Download/kaeru.lua https://raw.githubusercontent.com/pgen0x/kaeru/refs/heads/main/kaeru.lua")
+
+print(green.."✓ Kaeru berhasil di download\n"..reset)
+io.read()
+
+-- RUN KAERU
+elseif menu=="5" then
+
+loading("Running Kaeru")
+os.execute("lua /sdcard/Download/kaeru.lua")
+
+-- SET DPI
+elseif menu=="6" then
+
+io.write("Masukkan DPI: ")
+local dpi=io.read()
+
+loading("Set DPI "..dpi)
+
+os.execute("su -c 'wm density reset'")
+os.execute("su -c 'wm density "..dpi.."'")
+
+print(green.."✓ DPI berhasil diubah\n"..reset)
 io.read()
 
 elseif menu=="0" then
