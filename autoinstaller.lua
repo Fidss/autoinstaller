@@ -28,60 +28,6 @@ p:close()
 return cpu
 end
 
--- DETECT SOC
-function detect_soc()
-local cpuinfo=io.popen("cat /proc/cpuinfo"):read("*a"):lower()
-
-if cpuinfo:find("qualcomm") or cpuinfo:find("snapdragon") then
-return "SNAPDRAGON"
-elseif cpuinfo:find("mediatek") or cpuinfo:find("mt") then
-return "MEDIATEK"
-elseif cpuinfo:find("exynos") then
-return "EXYNOS"
-elseif cpuinfo:find("kirin") then
-return "KIRIN"
-else
-return "UNKNOWN"
-end
-end
-
--- LOGO SOC
-function soc_logo()
-
-local soc=detect_soc()
-
-if soc=="SNAPDRAGON" then
-print(red..[[
-
-███████╗███╗   ██╗ █████╗ ██████╗ 
-██╔════╝████╗  ██║██╔══██╗██╔══██╗
-███████╗██╔██╗ ██║███████║██████╔╝
-╚════██║██║╚██╗██║██╔══██║██╔═══╝ 
-███████║██║ ╚████║██║  ██║██║     
-╚══════╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝     
-
-     SNAPDRAGON DETECTED
-]]..reset)
-
-elseif soc=="MEDIATEK" then
-print(yellow..[[
-
-███╗   ███╗████████╗██╗  ██╗
-████╗ ████║╚══██╔══╝██║ ██╔╝
-██╔████╔██║   ██║   █████╔╝ 
-██║╚██╔╝██║   ██║   ██╔═██╗ 
-██║ ╚═╝ ██║   ██║   ██║  ██╗
-╚═╝     ╚═╝   ╚═╝   ╚═╝  ╚═╝
-
-      MEDIATEK DETECTED
-]]..reset)
-
-else
-print(cyan.."SOC : "..soc..reset)
-end
-
-end
-
 -- LOADING
 function loading(text)
 io.write(cyan..text)
@@ -117,11 +63,8 @@ print("Device  : "..model)
 print("Android : "..android)
 print("CPU     : "..detect_cpu())
 print("RAM     : "..detect_ram())
-print("SOC     : "..detect_soc())
 
 print(yellow.."====================================\n"..reset)
-
-soc_logo()
 
 end
 
@@ -145,7 +88,6 @@ print("4 Optimize System")
 print("5 Install Kaeru")
 print("6 Run Kaeru")
 print("7 Set DPI")
-print("8 Android Tweaks")
 print("9 Gaming Boost Mode")
 print("0 Keluar")
 
@@ -199,9 +141,6 @@ loading("Enable Freeform Mode")
 os.execute("su -c 'settings put global enable_freeform_support 1'")
 os.execute("su -c 'settings put global force_resizable_activities 1'")
 
-loading("Limit Background Apps")
-os.execute("su -c 'settings put global background_process_limit 2'")
-
 print(green.."\n✓ Auto Setup selesai\n"..reset)
 io.read()
 
@@ -217,7 +156,7 @@ os.execute("su -c 'echo 3 > /proc/sys/vm/drop_caches'")
 loading("Kill Background Apps")
 os.execute("su -c 'am kill-all'")
 
-print(green.."✓ Optimize selesai"..reset)
+print(green.."✓ Optimize selesai\n"..reset)
 io.read()
 
 -- GAMING BOOST
@@ -235,62 +174,7 @@ os.execute("su -c 'cmd power set-fixed-performance-mode-enabled true'")
 loading("GPU Boost")
 os.execute("su -c 'setprop debug.hwui.renderer opengl'")
 
-print(green.."✓ Gaming mode aktif"..reset)
-io.read()
-
--- INSTALL APK
-elseif menu=="1" or menu=="2" then
-
-loading("Download database")
-
-os.execute("curl -L -s https://raw.githubusercontent.com/Fidss/AutoInstaller/main/apps.json -o apps.json")
-
-local json=require("dkjson")
-local f=io.open("apps.json","r")
-
-local data=json.decode(f:read("*a"))
-f:close()
-
-local apps=data.apps
-
-for i,v in ipairs(apps) do
-print(i..". "..v.name)
-end
-
-local selected={}
-
-if menu=="1" then
-io.write("Pilih nomor: ")
-local input=io.read()
-
-for num in string.gmatch(input,"%d+") do
-table.insert(selected,tonumber(num))
-end
-else
-for i=1,#apps do
-table.insert(selected,i)
-end
-end
-
-local home="/data/data/com.termux/files/home/"
-
-for _,i in ipairs(selected) do
-
-local app=apps[i]
-local apk="app"..i..".apk"
-
-print(cyan.."Downloading "..app.name..reset)
-
-os.execute("curl -L --progress-bar '"..app.url.."' -o '"..apk.."'")
-
-loading("Installing "..app.name)
-
-os.execute("su -c 'pm install -r "..home..apk.."'")
-
-print(green.."✓ Install selesai"..reset)
-
-end
-
+print(green.."✓ Gaming mode aktif\n"..reset)
 io.read()
 
 elseif menu=="0" then
