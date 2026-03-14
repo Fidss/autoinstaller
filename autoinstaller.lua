@@ -64,6 +64,105 @@ local dpi=out:match("Physical density:%s*(%d+)")
 return dpi or "Unknown"
 end
 
+-- ULTRA DEBLOAT MODE (EXTREME)
+function ultra_debloat()
+
+progress("Clearing RAM")
+os.execute("su -c 'echo 3 > /proc/sys/vm/drop_caches'")
+
+progress("Killing Background Apps")
+os.execute("su -c 'am kill-all'")
+
+progress("Disable Play Store")
+os.execute("su -c 'pm disable-user --user 0 com.android.vending'")
+
+progress("Disable Google Maps")
+os.execute("su -c 'pm disable-user --user 0 com.google.android.apps.maps'")
+
+progress("Disable Google Photos")
+os.execute("su -c 'pm disable-user --user 0 com.google.android.apps.photos'")
+
+progress("Disable Google Drive")
+os.execute("su -c 'pm disable-user --user 0 com.google.android.apps.docs'")
+
+progress("Disable YouTube")
+os.execute("su -c 'pm disable-user --user 0 com.google.android.youtube'")
+
+progress("Disable Gmail")
+os.execute("su -c 'pm disable-user --user 0 com.google.android.gm'")
+
+progress("Disable Google Assistant")
+os.execute("su -c 'pm disable-user --user 0 com.google.android.googlequicksearchbox'")
+
+progress("Disable Chrome")
+os.execute("su -c 'pm disable-user --user 0 com.android.chrome'")
+
+progress("Disable Google Feedback")
+os.execute("su -c 'pm disable-user --user 0 com.google.android.feedback'")
+
+progress("Disable Google Partner Setup")
+os.execute("su -c 'pm disable-user --user 0 com.google.android.partnersetup'")
+
+progress("Disable Google Print")
+os.execute("su -c 'pm disable-user --user 0 com.google.android.printservice.recommendation'")
+
+progress("Disable Wallpaper Services")
+os.execute("su -c 'pm disable-user --user 0 com.google.android.apps.wallpaper'")
+
+progress("Disable Live Wallpaper")
+os.execute("su -c 'pm disable-user --user 0 com.android.wallpaper.livepicker'")
+
+progress("Disable OTA Updater")
+os.execute("su -c 'pm disable-user --user 0 com.google.android.gms.update'")
+
+progress("Disable Sync Services")
+os.execute("su -c 'settings put global master_sync_enabled 0'")
+
+progress("Limit Background Processes")
+os.execute("su -c 'settings put global background_process_limit 1'")
+
+progress("Disable Location")
+os.execute("su -c 'settings put secure location_mode 0'")
+
+progress("Disable Animations")
+os.execute("su -c 'settings put global window_animation_scale 0'")
+os.execute("su -c 'settings put global transition_animation_scale 0'")
+os.execute("su -c 'settings put global animator_duration_scale 0'")
+
+progress("Clean System Cache")
+os.execute("su -c 'rm -rf /data/cache/*'")
+
+progress("Restart SystemUI")
+os.execute("su -c 'pkill com.android.systemui'")
+
+print(green.."✓ ULTRA DEBLOAT SELESAI"..reset)
+
+end
+
+-- ENABLE CHROME & PLAY STORE
+function enable_google()
+
+progress("Mengaktifkan Play Store")
+os.execute("su -c 'pm enable com.android.vending'")
+
+progress("Mengaktifkan Chrome")
+os.execute("su -c 'pm enable com.android.chrome'")
+
+progress("Mengaktifkan Google Services")
+os.execute("su -c 'pm enable com.google.android.gms'")
+
+progress("Mengaktifkan Google Sync")
+os.execute("su -c 'settings put global master_sync_enabled 1'")
+
+progress("Mengaktifkan Background Process")
+os.execute("su -c 'settings delete global background_process_limit'")
+
+print(green.."✓ Chrome dan Play Store aktif kembali"..reset)
+
+os.execute("sleep 2")
+
+end
+
 -- HEADER
 function header()
 
@@ -216,6 +315,8 @@ print("3 Gaming Boost Mode")
 print("4 Set DPI Manual")
 print("5 Install aplikasi tertentu")
 print("6 Install semua aplikasi")
+print("7 Ultra Debloat Mode (Extreme)")
+print("8 Enable Chrome & Play Store")
 print("0 Keluar")
 
 io.write("\nPilih menu: ")
@@ -322,6 +423,12 @@ os.execute("su -c 'setprop debug.hwui.renderer opengl'")
 
 print(green.."Gaming mode aktif!"..reset)
 os.execute("sleep 2")
+
+elseif menu=="7" then
+ultra_debloat()
+
+elseif menu=="8" then
+enable_google()
 
 -- SET DPI
 elseif menu=="4" then
