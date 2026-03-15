@@ -585,7 +585,8 @@ print("9 Extreme Disable (System disabled) (Not Recommend, Bisa Bikin Tidak Bisa
 print("0 Keluar")
 
 io.write("\nPilih menu: ")
-local menu=io.read()
+io.flush()
+local menu = io.read("*l")
            
 -- AUTO SETUP SYSTEM
 if menu=="1" then
