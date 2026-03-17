@@ -95,22 +95,76 @@ function set_dpi()
     print(green.."✓ DPI berhasil diubah"..reset)
 end
 
-function debloat()
-    progress("Debloat ringan")
-    os.execute("pm disable-user --user 0 com.facebook.katana")
-    os.execute("pm disable-user --user 0 com.facebook.appmanager")
+-- ULTRA DEBLOAT MODE (EXTREME+)
+function ultra_debloat()
 
-    print(green.."✓ Debloat selesai"..reset)
+progress("Clearing RAM")
+os.execute("su -c 'sync; echo 3 > /proc/sys/vm/drop_caches'")
+
+progress("Killing Background Apps")
+os.execute("su -c 'am kill-all'")
+os.execute("su -c 'pkill -f com.android'")
+os.execute("su -c 'pkill -f google'")
+
+progress("Force Stop All Apps")
+os.execute("su -c 'cmd activity stop-app-switches'")
+
+progress("Disable Play Store")
+os.execute("su -c 'pm disable-user --user 0 com.android.vending'")
+
+progress("Disable Google Feedback")
+os.execute("su -c 'pm disable-user --user 0 com.google.android.feedback'")
+
+progress("Disable Google Partner Setup")
+os.execute("su -c 'pm disable-user --user 0 com.google.android.partnersetup'")
+
+progress("Disable Google Sync")
+os.execute("su -c 'settings put global master_sync_enabled 0'")
+
+progress("Disable Job Scheduler")
+os.execute("su -c 'cmd jobscheduler reset-execution-quota'")
+
+progress("Disable Doze Mode")
+os.execute("su -c 'dumpsys deviceidle disable'")
+
+progress("Disable Location")
+os.execute("su -c 'settings put secure location_mode 0'")
+
+progress("Disable Sensors")
+os.execute("su -c 'service call sensorservice 1'")
+
+progress("Disable Animations")
+os.execute("su -c 'settings put global window_animation_scale 0'")
+os.execute("su -c 'settings put global transition_animation_scale 0'")
+os.execute("su -c 'settings put global animator_duration_scale 0'")
+
+progress("Stop Logcat")
+os.execute("su -c 'logcat -c'")
+
+progress("Clean Dalvik Cache")
+os.execute("su -c 'rm -rf /data/dalvik-cache/*'")
+
+progress("Clean System Cache")
+os.execute("su -c 'rm -rf /data/cache/*'")
+
+progress("Clean Temp Files")
+os.execute("su -c 'rm -rf /data/local/tmp/*'")
+
+progress("Disable Thermal Service")
+os.execute("su -c 'stop thermal-engine'")
+
+progress("Disable Stats Service")
+os.execute("su -c 'stop statsd'")
+
+progress("Restart SystemUI")
+os.execute("su -c 'pkill com.android.systemui'")
+
+progress("Final RAM Cleanup")
+os.execute("su -c 'sync; echo 3 > /proc/sys/vm/drop_caches'")
+
+print(green.."✓ ULTRA DEBLOAT EXTREME SELESAI"..reset)
+
 end
-
-function enable_google()
-    progress("Enable Play Store & Chrome")
-    os.execute("pm enable com.android.vending")
-    os.execute("pm enable com.android.chrome")
-
-    print(green.."✓ Google aktif kembali"..reset)
-end
-
 -- =========================
 -- KAERU
 -- =========================
@@ -148,7 +202,7 @@ function main_menu()
     print("2 Optimize System")
     print("3 Gaming Boost Mode")
     print("4 Set DPI Manual")
-    print("5 Debloat Ringan (Aman)")
+    print("5 Ultra Debloat")
     print("6 Enable Chrome & Play Store")
     print("7 Install Kaeru")
     print("8 Run Kaeru")
@@ -166,7 +220,7 @@ function main_menu()
     elseif menu=="4" then
         set_dpi()
     elseif menu=="5" then
-        debloat()
+        ultra_debloat()
     elseif menu=="6" then
         enable_google()
     elseif menu=="7" then
