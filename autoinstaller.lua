@@ -7,45 +7,12 @@ local yellow="\27[33m"
 local cyan="\27[36m"
 local reset="\27[0m"
 
--- PROGRESS
-function progress(text)
-    print(cyan..text.."..."..reset)
+-- CLEAR AMAN (ANTI BUG TERMUX)
+function clear()
+    io.write("\27[2J\27[H")
 end
 
--- DETECT RAM
-function detect_ram()
-    local f=io.open("/proc/meminfo","r")
-    if not f then return "Unknown" end
-    for line in f:lines() do
-        if line:find("MemTotal") then
-            local ram=line:match("(%d+)")
-            ram=tonumber(ram)/1024
-            return math.floor(ram).." MB"
-        end
-    end
-    return "Unknown"
-end
-
--- DETECT CPU
-function detect_cpu()
-    local p=io.popen("getprop ro.product.cpu.abi")
-    if not p then return "Unknown" end
-    local cpu=p:read("*l")
-    p:close()
-    return cpu or "Unknown"
-end
-
--- DETECT DPI
-function detect_dpi()
-    local p=io.popen("wm density 2>/dev/null")
-    if not p then return "Unknown" end
-    local out=p:read("*a") or ""
-    p:close()
-    local dpi=out:match("Physical density:%s*(%d+)")
-    return dpi or "Unknown"
-end
-
--- HEADER + LOGO
+-- HEADER (SIMPLE BIAR GAK RUSAK)
 function header()
     print(cyan..[[
  █████╗ ██╗   ██╗████████╗ ██████╗ 
@@ -55,124 +22,30 @@ function header()
 ██║  ██║╚██████╔╝   ██║   ╚██████╔╝
 ╚═╝  ╚═╝ ╚═════╝    ╚═╝    ╚═════╝
 ]]..reset)
-
-    print(green.."      AUTO INSTALLER PRO"..reset)
-    print(yellow.."=============================="..reset)
-
-    local model=io.popen("getprop ro.product.model"):read("*l") or "Unknown"
-    local android=io.popen("getprop ro.build.version.release"):read("*l") or "Unknown"
-
-    print("Device  : "..model)
-    print("Android : "..android)
-    print("CPU     : "..detect_cpu())
-    print("RAM     : "..detect_ram())
-    print("DPI     : "..detect_dpi())
-
-    print(yellow.."==============================\n"..reset)
+    print(green.."AUTO INSTALLER PRO"..reset)
+    print("================================\n")
 end
 
--- ROOT CHECK
-local root_check = io.popen("su -c id 2>/dev/null"):read("*a")
-if not root_check or not root_check:find("uid=0") then
-    print(red.."Root tidak tersedia!"..reset)
-    os.exit()
+-- PROGRESS BAR AMAN
+function progress(text)
+    io.write(cyan..text.." ")
+    for i=1,20 do
+        io.write("#")
+        io.flush()
+        os.execute("sleep 0.05")
+    end
+    print(reset)
 end
 
--- AUTO SETUP
+-- =========================
+-- FITUR
+-- =========================
+
 function auto_setup()
-    progress("Set DPI 220")
-    os.execute("su -c 'wm density 220'")
-
-    progress("Disable animasi")
-    os.execute("su -c 'settings put global window_animation_scale 0'")
-    os.execute("su -c 'settings put global transition_animation_scale 0'")
-    os.execute("su -c 'settings put global animator_duration_scale 0'")
-
-    progress("Performa mode")
-    os.execute("su -c 'setprop debug.performance.tuning 1'")
-    os.execute("su -c 'setprop video.accelerate.hw 1'")
-
-    progress("Bersihkan RAM")
-    os.execute("su -c 'sync; echo 3 > /proc/sys/vm/drop_caches'")
-
-    print(green.."✓ Auto setup selesai"..reset)
-end
-
--- OPTIMIZE
-function optimize()
-    progress("Bersihkan cache")
-    os.execute("su -c 'rm -rf /data/cache/*'")
-
-    progress("Boost RAM")
-    os.execute("su -c 'sync; echo 3 > /proc/sys/vm/drop_caches'")
-
-    progress("Kill background apps")
-    os.execute("su -c 'am kill-all'")
-
-    print(green.."✓ Optimize selesai"..reset)
-end
-
--- GAMING
-function gaming()
-    progress("Boost RAM")
-    os.execute("su -c 'sync; echo 3 > /proc/sys/vm/drop_caches'")
-
-    progress("Kill apps")
-    os.execute("su -c 'am kill-all'")
-
-    progress("Mode performa")
-    os.execute("su -c 'cmd power set-fixed-performance-mode-enabled true'")
-
-    print(green.."✓ Gaming mode aktif"..reset)
-end
-
--- DPI
-function set_dpi()
-    io.write("Masukkan DPI: ")
-    local dpi=io.read()
-
-    progress("Apply DPI "..dpi)
-    os.execute("su -c 'wm density "..dpi.."'")
-
-    print(green.."✓ DPI berhasil diubah"..reset)
-end
-
--- DEBLOAT
-function debloat()
-    progress("Bersihkan RAM")
-    os.execute("su -c 'sync; echo 3 > /proc/sys/vm/drop_caches'")
-
-    progress("Kill background apps")
-    os.execute("su -c 'am kill-all'")
-
-    progress("Matikan animasi")
-    os.execute("su -c 'settings put global window_animation_scale 0'")
-    os.execute("su -c 'settings put global transition_animation_scale 0'")
-    os.execute("su -c 'settings put global animator_duration_scale 0'")
-
-    print(green.."✓ Debloat ringan selesai"..reset)
-end
-
--- ENABLE GOOGLE
-function enable_google()
-    progress("Enable Play Store")
-    os.execute("su -c 'pm enable com.android.vending'")
-
-    progress("Enable Chrome")
-    os.execute("su -c 'pm enable com.android.chrome'")
-
-    progress("Enable Google Services")
-    os.execute("su -c 'pm enable com.google.android.gms'")
-
-    print(green.."✓ Google aktif kembali"..reset)
-end
-
--- INSTALL KAERU
-function install_kaeru()
     progress("Setup storage")
     os.execute("termux-setup-storage")
 
-    progress("Update & upgrade")
+    progress("Update system")
     os.execute("pkg update -y && pkg upgrade -y")
 
     progress("Install package")
@@ -181,27 +54,94 @@ function install_kaeru()
     progress("Install python module")
     os.execute("pip install pyfiglet rich")
 
+    print(green.."✓ Auto setup selesai"..reset)
+end
+
+function optimize()
+    progress("Optimasi ringan")
+    os.execute("settings put global animator_duration_scale 0")
+    os.execute("settings put global transition_animation_scale 0")
+    os.execute("settings put global window_animation_scale 0")
+
+    print(green.."✓ Optimasi selesai"..reset)
+end
+
+function gaming()
+    progress("Gaming boost")
+    os.execute("cmd power set-fixed-performance-mode-enabled true")
+    print(green.."✓ Gaming mode aktif"..reset)
+end
+
+function set_dpi()
+    print("\nPilih DPI:")
+    print("1. 360 (Default)")
+    print("2. 420 (Sedikit kecil)")
+    print("3. 480 (Lebih kecil)")
+
+    io.write("Pilih: ")
+    local pilih = io.read()
+
+    if pilih=="1" then
+        os.execute("wm density 360")
+    elseif pilih=="2" then
+        os.execute("wm density 420")
+    elseif pilih=="3" then
+        os.execute("wm density 480")
+    else
+        print(red.."Pilihan salah"..reset)
+        return
+    end
+
+    print(green.."✓ DPI berhasil diubah"..reset)
+end
+
+function debloat()
+    progress("Debloat ringan")
+    os.execute("pm disable-user --user 0 com.facebook.katana")
+    os.execute("pm disable-user --user 0 com.facebook.appmanager")
+
+    print(green.."✓ Debloat selesai"..reset)
+end
+
+function enable_google()
+    progress("Enable Play Store & Chrome")
+    os.execute("pm enable com.android.vending")
+    os.execute("pm enable com.android.chrome")
+
+    print(green.."✓ Google aktif kembali"..reset)
+end
+
+-- =========================
+-- KAERU
+-- =========================
+
+function install_kaeru()
     progress("Download Kaeru")
     os.execute("curl -L -o /sdcard/Download/kaeru.lua https://raw.githubusercontent.com/pgen0x/kaeru/refs/heads/main/kaeru.lua")
 
     print(green.."✓ Kaeru berhasil diinstall"..reset)
 end
 
--- RUN KAERU
 function run_kaeru()
     local f = io.open("/sdcard/Download/kaeru.lua","r")
+
     if not f then
         print(red.."Kaeru belum diinstall!"..reset)
         return
     end
+
     f:close()
 
     progress("Menjalankan Kaeru")
-    os.execute("lua /sdcard/Download/kaeru.lua || lua /sdcard/download/kaeru.lua")
+    os.execute("lua /sdcard/Download/kaeru.lua")
 end
 
--- MENU
-while true do
+-- =========================
+-- MENU UTAMA (ANTI BUG)
+-- =========================
+
+function main_menu()
+    clear()
     header()
 
     print("1 Auto Setup System")
@@ -234,11 +174,15 @@ while true do
     elseif menu=="8" then
         run_kaeru()
     elseif menu=="0" then
-        print("Keluar...")
-        break
+        os.exit()
+    else
+        print(red.."Pilihan tidak valid"..reset)
     end
 
-    print("\nTekan Enter untuk kembali ke menu...")
+    print("\nTekan Enter untuk kembali...")
     io.read()
-    os.execute("clear")
+    main_menu()
 end
+
+-- JALANKAN
+main_menu()
