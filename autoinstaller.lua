@@ -101,14 +101,6 @@ function ultra_debloat()
 progress("Clearing RAM")
 os.execute("su -c 'sync; echo 3 > /proc/sys/vm/drop_caches'")
 
-progress("Killing Background Apps")
-os.execute("su -c 'am kill-all'")
-os.execute("su -c 'pkill -f com.android'")
-os.execute("su -c 'pkill -f google'")
-
-progress("Force Stop All Apps")
-os.execute("su -c 'cmd activity stop-app-switches'")
-
 progress("Disable Play Store")
 os.execute("su -c 'pm disable-user --user 0 com.android.vending'")
 
